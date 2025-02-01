@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <script>
+        let currentQuestionIndex = 0; // Start at the first question
+        let totalQuestions = 0; // Total number of questions
+        let score = 0; // Initialize score
+
+        async function loadQuestion() {
+            const response = await fetch(`/quiz/question/${currentQuestionIndex}`);
+            if (response.ok) {
+                const data = await response.json();
+                totalQuestions = data.total_questions; // Set total questions
+                displayQuestion(data);
+            } else {
+                alert('Error loading question');
+            }
+        }
+
+        function displayQuestion(data) {
+            document.querySelector('.container h1').innerText = `Question ${data.question_index} of ${totalQuestions}`;
+            document.querySelector('.container h2').innerText = `Question ${data.question_index} of ${totalQuestions}`;
+            document.querySelector('.container p').innerText = data.question.question_text;
+
+            // Display image if exists
+            const img = document.querySelector('.container img');
+            if (data.question.image_data) {
+                img.src = data.question.image_data;
+                img.alt = "Question Image";
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+
+            const optionsContainer = document.querySelector('.options');
+            optionsContainer.innerHTML = ''; // Clear previous options
+
+            // Create radio buttons for options
+            for (const [label, option] of Object.entries(data.question.labeled_options)) {
+                const labelElement = document.createElement('label');
+                labelElement.innerHTML = `
+                    <input type="radio" name="user_answer" value="${label}" required>
+                    ${label}. ${option}
+                `;
+                optionsContainer.appendChild(labelElement);
+                optionsContainer.appendChild(document.createElement('br'));
+            }
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault(); // Prevent form submission
+            const userAnswer = document.querySelector('input[name="user_answer"]:checked').value;
+            const response = await fetch('/quiz/answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ questionIndex: currentQuestionIndex, user_answer: userAnswer })
+            });
+
+            const data = await response.json();
+            score += data.score; // Update score
+
+            if (data.message === 'Quiz completed') {
+                alert(`Quiz completed! Your score: ${score}/${totalQuestions}`);
+                // Optionally redirect or reset the quiz
+                window.location.href = '/'; // Redirect to home or another page
+            } else {
+                currentQuestionIndex++; // Move to the next question
+                loadQuestion(); // Load the next question
+            }
+        }
+
+        window.onload = loadQuestion; // Load the first question when the page loads
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Question 1 of 1</h1>
+        <form onsubmit="handleSubmit(event)">
+            <h2>Question 1 of 1</h2>
+            <p></p>
+            <img src="" alt="Question Image" style="display: none;"> <!-- Hidden by default -->
+            <div class="options"></div> <!-- Container for options -->
+            <input type="hidden" name="score" value="0">
+            <button type="submit">Next</button>
+        </form>
+    </div>
+</body>
+</html>

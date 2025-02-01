@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <style>
+        .correct {
+            background-color: lightgreen; /* Light green for correct answers */
+        }
+        .wrong {
+            background-color: lightcoral; /* Light red for wrong answers */
+        }
+        .no-answer {
+            background-color: transparent; /* No color for unanswered questions */
+        }
+        table {
+            width: 100%; /* Full width for the table */
+            border-collapse: collapse; /* Merge table borders */
+        }
+        th, td {
+            border: 1px solid #ddd; /* Border for table cells */
+            padding: 8px; /* Padding for table cells */
+            text-align: left; /* Align text to the left */
+        }
+        th {
+            background-color: #f2f2f2; /* Header background color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Results</h1>
+        <h2>Your Score: {{ score }} out of {{ total }}</h2>
+
+        <h3>Summary of Questions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Question Number</th>
+                    <th>Question Text</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question, user_answer in zip(questions, user_answers) %}
+                    <tr class="{% if user_answer == question.answer %}correct{% elif user_answer == ' ' %}no-answer{% else %}wrong{% endif %}">
+                        <td>{{ loop.index }}</td>  <!-- Display the sequential question number -->
+                        <td>{{ question.question_text }}</td>
+                        <td>{{ user_answer }}</td>  <!-- Display the user's answer -->
+                        <td>{{ question.answer }}</td>  <!-- Display the correct answer -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="explanation">
+            <h3>Explanations</h3>
+            {% for question in questions %}
+                <p><strong>Question {{ loop.index }}:</strong> {{ question.explanation }}</p>
+            {% endfor %}
+        </div>
+
+        <a href="{{ url_for('index') }}">Take Another Quiz</a>
+    </div>
+</body>
+</html>

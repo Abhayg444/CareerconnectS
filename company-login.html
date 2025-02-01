@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Login/Register</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <!-- CSS for styling -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 350px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-container button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-container .toggle-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container" id="loginFormContainer">
+        <h2>Company Login</h2>
+        <form id="companyLoginForm" onsubmit="return validateLoginForm()">
+            <input type="text" id="loginUsername" placeholder="Username" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <div class="error-message" id="loginErrorMessage">Invalid username or password.</div>
+            <button type="submit">Login</button>
+        </form>
+        <p style="text-align:center;">Don't have an account? <button class="toggle-btn" onclick="toggleForms()">Register here</button></p>
+    </div>
+
+    <div class="form-container" id="registerFormContainer" style="display:none;">
+        <h2>Company Register</h2>
+        <form id="companyRegisterForm" onsubmit="return validateRegisterForm()">
+            <input type="text" id="companyName" placeholder="Company Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="companyAddress" placeholder="Company Address" required>
+            <input type="text" id="registerUsername" placeholder="Username" required>
+            <input type="password" id="registerPassword" placeholder="Password" required>
+            <div class="error-message" id="registerErrorMessage">Please fill out all fields.</div>
+            <button type="submit">Register</button>
+        </form>
+        <p style="text-align:center;">Already have an account? <button class="toggle-btn" onclick="toggleForms()">Login here</button></p>
+    </div>
+
+    <!-- JavaScript for form switching and validation -->
+    <script>
+        function toggleForms() {
+            var loginForm = document.getElementById('loginFormContainer');
+            var registerForm = document.getElementById('registerFormContainer');
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function validateLoginForm() {
+            var username = document.getElementById('loginUsername').value;
+            var password = document.getElementById('loginPassword').value;
+
+            // Simple client-side validation for demonstration purposes
+            if (username === "company" && password === "company123") {
+                alert("Login successful!");
+                return true;
+            } else {
+                document.getElementById('loginErrorMessage').style.display = 'block';
+                return false;
+            }
+        }
+
+        function validateRegisterForm() {
+            var companyName = document.getElementById('companyName').value;
+            var email = document.getElementById('email').value;
+            var companyAddress = document.getElementById('companyAddress').value;
+            var username = document.getElementById('registerUsername').value;
+            var password = document.getElementById('registerPassword').value;
+
+            if (companyName && email && companyAddress && username && password) {
+                alert("Registration successful!");
+                return true;
+            } else {
+                document.getElementById('registerErrorMessage').style.display = 'block';
+                return false;
+            }
+        }
+    </script>
+</body>
+
+</html>

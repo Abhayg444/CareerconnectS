@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1, h2 {
+            color: #007BFF;
+            text-align: center;
+        }
+        h3 {
+            margin-top: 30px;
+            color: #444;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr.correct {
+            background-color: lightgreen;
+        }
+        tr.wrong {
+            background-color: lightcoral;
+        }
+        tr.no-answer {
+            background-color: #fafafa;
+        }
+        .explanation {
+            margin-top: 30px;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Results</h1>
+        <h2>Your Score: {{ score }} out of {{ total }}</h2>
+
+        <h3>Summary of Questions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Question Number</th>
+                    <th>Question Text</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question, user_answer in zip(questions, user_answers) %}
+                    <tr class="{% if user_answer == question.answer %}correct{% elif user_answer == ' ' %}no-answer{% else %}wrong{% endif %}">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ question.question_text }}</td>
+                        <td>{{ user_answer }}</td>
+                        <td>{{ question.answer }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="explanation">
+            <h3>Explanations</h3>
+            {% for question in questions %}
+                <p><strong>Question {{ loop.index }}:</strong> {{ question.explanation }}</p>
+            {% endfor %}
+        </div>
+
+        <a href="{{ url_for('index') }}">Take Another Quiz</a>
+    </div>
+</body>
+</html>

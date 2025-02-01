@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ problem.title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .description {
+            margin-bottom: 20px;
+        }
+
+        .input-format, .output-format {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            border-left: 5px solid #007bff;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            border-left: 5px solid #28a745;
+        }
+
+        .language-selector {
+            margin-bottom: 20px;
+        }
+
+        .language-selector label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>{{ problem.title }}</h1>
+        <div class="description">{{ problem.description }}</div>
+
+        <div class="input-format">
+            <strong>Input Format:</strong><br>
+            {{ problem.input_format }}
+        </div>
+
+        <div class="output-format">
+            <strong>Output Format:</strong><br>
+            {{ problem.output_format }}
+        </div>
+
+        <form method="POST" action="/run">
+            <div class="language-selector">
+                <label for="language">Select Language:</label>
+                <select name="language" id="language">
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <!-- Add more languages as needed -->
+                </select>
+            </div>
+
+            <textarea name="code" placeholder="Write your code here..."></textarea>
+
+            <div>
+                <label for="input">Input Data:</label>
+                <textarea name="input" placeholder="Enter input data here..."></textarea>
+            </div>
+
+            <button type="submit">Run Code</button>
+        </form>
+
+        <div class="output">
+            <strong>Output:</strong>
+            <pre id="result"></pre>
+        </div>
+    </div>
+
+</body>
+</html>

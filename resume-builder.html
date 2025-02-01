@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h4 {
+            text-align: center;
+            color: #343a40;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn-primary, .btn-success {
+            width: 100%;
+        }
+        .btn-danger {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Resume Builder</h1>
+
+        <!-- Resume Form -->
+        <form id="resumeForm">
+            <!-- Personal Information -->
+            <h4>Personal Information</h4>
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" class="form-control" placeholder="Enter your first name" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" class="form-control" placeholder="Enter your last name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="linkedin">LinkedIn Profile</label>
+                <input type="url" id="linkedin" class="form-control" placeholder="Enter your LinkedIn profile link">
+            </div>
+            <div class="form-group">
+                <label for="github">GitHub Profile</label>
+                <input type="url" id="github" class="form-control" placeholder="Enter your GitHub profile link">
+            </div>
+
+            <!-- Educational Details -->
+            <h4>Educational Details</h4>
+            <div class="form-group">
+                <label for="education">Education</label>
+                <textarea id="education" class="form-control" placeholder="Enter your educational background" required></textarea>
+            </div>
+
+            <!-- Experience -->
+            <h4>Experience</h4>
+            <div class="form-group">
+                <label for="experience">Experience</label>
+                <textarea id="experience" class="form-control" placeholder="Describe your work experience in detail" required></textarea>
+            </div>
+
+            <!-- Projects -->
+            <h4>Projects</h4>
+            <div class="form-group">
+                <label for="projects">Projects</label>
+                <textarea id="projects" class="form-control" placeholder="List your key projects" required></textarea>
+            </div>
+
+            <!-- Skills -->
+            <h4>Skills</h4>
+            <div class="form-group">
+                <label for="skills">Skills</label>
+                <textarea id="skills" class="form-control" placeholder="List your technical and soft skills" required></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Generate PDF</button>
+        </form>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Axios for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- JavaScript to handle form submission -->
+    <script>
+        // Handle resume form submission
+        document.getElementById("resumeForm").addEventListener("submit", function (e) {
+            e.preventDefault();  // Prevent default form submission
+
+            const resumeData = {
+                firstName: document.getElementById("firstName").value,
+                lastName: document.getElementById("lastName").value,
+                phone: document.getElementById("phone").value,
+                email: document.getElementById("email").value,
+                linkedin: document.getElementById("linkedin").value,
+                github: document.getElementById("github").value,
+                education: document.getElementById("education").value,
+                experience: document.getElementById("experience").value,
+                projects: document.getElementById("projects").value,
+                skills: document.getElementById("skills").value
+            };
+
+            // Send data to the backend to generate a PDF
+            axios.post('http://localhost:4000/generate-pdf', resumeData)
+                .then(() => axios.get('http://localhost:4000/fetch-pdf', { responseType: 'blob' }))
+                .then((response) => {
+                    // Create a link to download the PDF
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'Resume.pdf');
+                    document.body.appendChild(link);
+                    link.click();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error generating PDF.');
+                });
+        });
+    </script>
+</body>
+</html>

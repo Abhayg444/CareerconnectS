@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1, h2 {
+            color: #007BFF;
+            text-align: center;
+        }
+        p {
+            font-size: 18px;
+            color: #444;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Question {{ question_index }} of {{ total_questions }}</h1>
+        <form method="POST">
+            <p>{{ question['question_text'] }}</p>
+        
+            {% if question['image_data'] %}
+                <img src="{{ question['image_data'] }}" alt="Question Image">
+            {% endif %}
+            
+            <br>
+            <!-- Display options as radio buttons without extra labels -->
+            {% for label, option in question['labeled_options'].items() %}
+                <label>
+                    <input type="radio" name="user_answer" value="{{ label }}">
+                    {{ label }}. {{ option }}  <!-- Properly display label and option -->
+                </label><br>
+            {% endfor %}
+        
+            <br>
+            <input type="hidden" name="score" value="{{ score }}">
+            <button type="submit">Next</button>
+        </form>        
+    </div>
+</body>
+</html>

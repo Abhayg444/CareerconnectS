@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        /* CSS styles go here */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        .dashboard {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #34495e;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #ecf0f1;
+        }
+
+        .main-content h1 {
+            margin-top: 0;
+        }
+
+        #content {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 60%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+        }
+
+        .form-actions button {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-actions button:hover {
+            background-color: #34495e;
+        }
+        .button-container {
+            margin: 0rem 0rem 2.5rem 7rem;
+            height: 100%;
+        }
+
+        .btn {
+            border: 1px solid #000;
+            background-color: transparent;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .btn a:hover {
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>Student Portal</h2>
+            <ul>
+                <li><a href="#" id="dashboard">Dashboard</a></li>
+                <li><a href="#" id="aptitude">Aptitude</a></li>
+                <li><a href="#" id="tech">Technical</a></li>
+                <li><a href="#" id="Mockinterview">Mock-Interview</a></li>
+                <li><a href="#" id="resume">Resume Builder</a></li>
+                <li><a href="#" id="resumeats">Resume Scanner</a></li>
+                <li><a href="#" id="announcements">Announcements</a></li>
+                <li><a href="#" id="profile">Profile</a></li>
+                <li><a href="#" id="logout">Logout</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <h1>Welcome, <span id="fullName">Student</span></h1>
+            <div id="content">
+                <p>Select an option from the sidebar to view more details.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const content = document.getElementById('content');
+
+            // Fetch the full name from localStorage
+            const fullName = localStorage.getItem('fullName');
+
+            // If a full name exists, set it in the span
+            if (fullName) {
+                document.getElementById('fullName').textContent = fullName;
+            }
+
+            document.getElementById('dashboard').addEventListener('click', function () {
+                content.innerHTML = '<h2>Dashboard</h2><p>Welcome to your dashboard. Here you will find an overview of your activities and performance.</p>';
+            });
+
+            document.getElementById('aptitude').addEventListener('click', function () {
+                window.location.href = 'http://127.0.0.1:5000'; // Redirect to the resumeats.html page
+            });
+            
+            document.getElementById('tech').addEventListener('click', function () {
+                window.location.href = 'http://127.0.0.1:5555'; // Redirect to the resumeats.html page
+            });
+
+            document.getElementById('Mockinterview').addEventListener('click', function () {
+                content.innerHTML = '<h2>Assignments</h2><p>Your assignments and deadlines will be displayed here.</p>';
+            });
+
+            document.getElementById('resume').addEventListener('click', function() {
+                content.innerHTML = `
+                <h2>Resume</h2>
+                <p>Create Your Professional Resume With Resume Builder</p>
+                <div class="row">
+        <div class="button-container">
+            <button type="button" class="btn">
+                <a href="Form.html">Create Your Resume</a>
+            </button>
+        </div>
+    </div>
+            `});
+
+            document.getElementById('resumeats').addEventListener('click', function() {
+                content.innerHTML = `
+                <h2>Resume</h2>
+                <p>Check if your Resume is Job Ready</p>
+                <div class="row">
+        <div class="button-container">
+            <button type="button" class="btn">
+                <a href="http://localhost:8501">Start ATS Scan</a>
+            </button>
+        </div>
+    </div>
+            `});
+            document.getElementById('announcements').addEventListener('click', function () {
+                content.innerHTML = '<h2>Announcements</h2><p>Latest announcements and updates will be shown here.</p>';
+            });
+
+            // Profile Section
+            document.getElementById('profile').addEventListener('click', function () {
+                const storedFullName = localStorage.getItem('fullName') || '';
+                const storedEmail = localStorage.getItem('email') || '';
+
+                content.innerHTML = `
+                    <h2>Profile</h2>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="fullNameInput">Full Name</label>
+                            <input type="text" id="fullNameInput" value="${storedFullName}">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailInput">Email</label>
+                            <input type="email" id="emailInput" value="${storedEmail}">
+                        </div>
+                        <div class="form-group">
+                            <label for="passwordInput">Password</label>
+                            <input type="password" id="passwordInput" placeholder="Enter new password">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit">Save Changes</button>
+                        </div>
+                    </form>
+                `;
+
+                document.getElementById('profileForm').addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const newFullName = document.getElementById('fullNameInput').value;
+                    const newEmail = document.getElementById('emailInput').value;
+                    const newPassword = document.getElementById('passwordInput').value;
+
+                    // Update localStorage
+                    localStorage.setItem('fullName', newFullName);
+                    localStorage.setItem('email', newEmail);
+
+                    if (newPassword) {
+                        // Save hashed password to localStorage (for demonstration purposes only)
+                        localStorage.setItem('password', newPassword);  // Normally you'd hash it!
+                    }
+
+                    // Update the displayed name
+                    document.getElementById('fullName').textContent = newFullName;
+
+                    content.innerHTML = '<p>Your profile has been updated successfully!</p>';
+                });
+            });
+
+            document.getElementById('logout').addEventListener('click', function () {
+                localStorage.clear();  // Clear stored data on logout
+                window.location.href = "student-login.html";
+            });
+        });
+    </script>
+</body>
+
+</html>
