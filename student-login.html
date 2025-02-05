@@ -35,7 +35,8 @@
             flex-direction: column;
         }
 
-        .form-container input {
+        .form-container input,
+        .form-container select {
             margin-bottom: 15px;
             padding: 10px;
             border: 1px solid #ddd;
@@ -69,6 +70,33 @@
             text-align: center;
             display: none;
         }
+
+        .gender-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-container input[type="radio"] {
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .form-container label {
+            margin-right: 20px;
+            display: inline-block;
+            font-weight: normal;
+        }
+
+        /* Style for Back to Index link */
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #007bff;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -82,6 +110,10 @@
             <button type="submit">Login</button>
         </form>
         <p style="text-align:center;">Don't have an account? <button class="toggle-btn" onclick="toggleForms()">Register here</button></p>
+        <!-- Back to Index Link -->
+        <div class="back-link">
+            <a href="index.html">Back to Index</a>
+        </div>
     </div>
 
     <div class="form-container" id="registerFormContainer" style="display:none;">
@@ -92,13 +124,41 @@
             <input type="tel" id="phone" placeholder="Phone Number" required>
             <input type="date" id="dob" placeholder="Date of Birth" required>
             <input type="text" id="college" placeholder="College Name" required>
-            <input type="text" id="department" placeholder="Department" required>
+
+            <!-- Department Dropdown -->
+            <select id="department" required>
+                <option value="">Select Department</option>
+                <option value="COMPS">COMPS</option>
+                <option value="MECH">MECH</option>
+                <option value="EXTC">EXTC</option>
+                <option value="IT">IT</option>
+                <option value="CIVIL">CIVIL</option>
+                <option value="ELX">ELX</option>
+                <option value="AIDS">AIDS</option>
+            </select>
+
+            <!-- Gender Radio Buttons -->
+            <div class="gender-container">
+                <div>
+                    <input type="radio" id="male" name="gender" value="male" required>
+                    <label for="male">Male</label>
+                </div>
+                <div>
+                    <input type="radio" id="female" name="gender" value="female" required>
+                    <label for="female">Female</label>
+                </div>
+            </div>
+
             <input type="text" id="registerUsername" placeholder="Username" required>
             <input type="password" id="registerPassword" placeholder="Password" required>
             <div class="error-message" id="registerErrorMessage">Please fill out all fields.</div>
             <button type="submit">Register</button>
         </form>
         <p style="text-align:center;">Already have an account? <button class="toggle-btn" onclick="toggleForms()">Login here</button></p>
+        <!-- Back to Index Link -->
+        <div class="back-link">
+            <a href="index.html">Back to Index</a>
+        </div>
     </div>
 
     <script>
@@ -152,16 +212,17 @@
             var dob = document.getElementById('dob').value;
             var college = document.getElementById('college').value;
             var department = document.getElementById('department').value;
+            var gender = document.querySelector('input[name="gender"]:checked')?.value;
             var username = document.getElementById('registerUsername').value;
             var password = document.getElementById('registerPassword').value;
 
-            if (name && email && phone && dob && college && department && username && password) {
+            if (name && email && phone && dob && college && department && gender && username && password) {
                 fetch('http://localhost:3000/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ name, email, phone, dob, college, department, username, password }),
+                    body: JSON.stringify({ name, email, phone, dob, college, department, gender, username, password }),
                 })
                 .then(response => response.json())
                 .then(data => {

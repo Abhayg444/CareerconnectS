@@ -1,96 +1,178 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <!-- CSS for styling -->
+    <title>Admin Login/Register</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
 
-        .login-container {
-            background-color: rgb(255, 255, 255);
-            padding: 30px;
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
         }
 
-        .login-container h2 {
+        h1 {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
+        input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
+            margin: 10px 0;
             border-radius: 5px;
+            border: 1px solid #ddd;
         }
 
-        .login-container button {
+        button {
             width: 100%;
             padding: 10px;
-            background-color: #007bff;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .login-container button:hover {
-            background-color: #0056b3;
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer;
+            color: #4CAF50;
         }
 
         .error-message {
             color: red;
             text-align: center;
+            margin-top: 10px;
+        }
+
+        .register-fields {
             display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-
 <body>
-    
-    <div class="login-container">
-        <h2>Admin Login</h2>
-        <form id="adminLoginForm" onsubmit="return validateForm()">
+
+    <div class="form-container">
+        <h1 id="form-title">Admin Login</h1>
+        <form id="admin-form">
+            <!-- Registration fields (hidden by default) -->
+            <div class="register-fields">
+                <input type="text" id="name" placeholder="Name">
+                <input type="text" id="position" placeholder="Position">
+                <input type="email" id="email" placeholder="Email">
+                <input type="tel" id="phone" placeholder="Phone Number">
+            </div>
+
+            <!-- Login and Register shared fields -->
             <input type="text" id="username" placeholder="Username" required>
             <input type="password" id="password" placeholder="Password" required>
-            <div class="error-message" id="errorMessage">Invalid username or password.</div>
             <button type="submit">Login</button>
         </form>
+        <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
+       
+        <div class="error-message" id="error-message"></div>
+
+        <!-- Back to Home Link -->
+        <div class="back-link">
+            <a href="index.html">Back to Home</a>
+        </div>
     </div>
 
-    <!-- JavaScript for client-side validation -->
     <script>
-        function validateForm() {
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
+        let isLogin = true;
 
-            // Simple client-side validation for demonstration purposes
-            if (username === "admin" && password === "password123") {
-                alert("Login successful!");
-                return true;
-            } else {
-                document.getElementById('errorMessage').style.display = 'block';
-                return false;
+        const formTitle = document.getElementById('form-title');
+        const toggleLink = document.getElementById('toggle-link');
+        const registerFields = document.querySelector('.register-fields');
+        const formButton = document.querySelector('button');
+
+        toggleLink.addEventListener('click', () => {
+            isLogin = !isLogin;
+            formTitle.textContent = isLogin ? 'Admin Login' : 'Admin Register';
+            toggleLink.textContent = isLogin ? "Don't have an account? Register here." : "Already have an account? Login here.";
+            registerFields.style.display = isLogin ? 'none' : 'block'; // Show/Hide registration fields
+            formButton.textContent = isLogin ? 'Login' : 'Register';
+        });
+
+        document.getElementById('admin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            let payload = { username, password };
+
+            if (!isLogin) {
+                // Add registration fields to payload
+                const name = document.getElementById('name').value;
+                const position = document.getElementById('position').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                payload = { name, position, email, phone, username, password };
             }
-        }
-    </script>
-</body>
 
+            const url = isLogin ? 'http://localhost:3000/admin/login' : 'http://localhost:3000/admin/register';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+            const errorMessage = document.getElementById('error-message');
+
+            if (response.ok) {
+                alert(data.message);
+                if (isLogin) {
+                    window.location.href = './admin-dashboard2.html'; // Redirect to dashboard on successful login
+                }
+            } else {
+                errorMessage.textContent = data.message; // Display error message
+            }
+        });
+    </script>
+
+</body>
 </html>
