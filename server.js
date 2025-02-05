@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -32,7 +31,6 @@ const studentSchema = new mongoose.Schema({
     password: String, // The password will be hashed
 });
 
-
 // Create the Student model
 const Student = mongoose.model('Student', studentSchema);
 
@@ -48,6 +46,55 @@ const adminSchema = new mongoose.Schema({
 
 // Create the Admin model
 const Admin = mongoose.model('Admin', adminSchema);
+
+// Define the Announcement schema
+const announcementSchema = new mongoose.Schema({
+    title: String,
+    content: String,
+    createdAt: { type: Date, default: Date.now },
+});
+
+// Create the Announcement model
+const Announcement = mongoose.model('Announcement', announcementSchema);
+
+// Create an announcement (Admin only)
+app.post('/announcements', async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        const newAnnouncement = new Announcement({ title, content });
+        await newAnnouncement.save();
+        res.status(201).json({ message: 'Announcement created successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating announcement', error });
+    }
+});
+
+// Get all announcements for students and admins
+app.get('/announcements', async (req, res) => {
+    try {
+        const announcements = await Announcement.find().sort({ createdAt: -1 });
+        res.status(200).json(announcements);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching announcements', error });
+    }
+});
+
+// DELETE an announcement by ID (Admin only)
+app.delete('/announcements/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedAnnouncement = await Announcement.findByIdAndDelete(id);
+
+        if (!deletedAnnouncement) {
+            return res.status(404).json({ message: 'Announcement not found' });
+        }
+
+        res.status(200).json({ message: 'Announcement deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting announcement', error });
+    }
+});
 
 // Student Registration Route
 app.post('/register', async (req, res) => {
@@ -79,7 +126,6 @@ app.post('/register', async (req, res) => {
         }
     }
 });
-
 
 // Student Login Route
 app.post('/login', async (req, res) => {
@@ -189,6 +235,7 @@ app.get('/admin/profile', async (req, res) => {
         res.status(500).json({ message: 'Error fetching admin profile', error });
     }
 });
+
 // Get total count of students route
 app.get('/students/count', async (req, res) => {
     try {
@@ -208,6 +255,7 @@ app.get('/students', async (req, res) => {
         res.status(500).json({ message: 'Error fetching students', error });
     }
 });
+
 // DELETE a student by username
 app.delete('/students/:username', async (req, res) => {
     const username = req.params.username;
@@ -223,6 +271,7 @@ app.delete('/students/:username', async (req, res) => {
     }
 });
 
+// Update student details
 app.put('/students/:username', async (req, res) => {
     const username = req.params.username;
     const { name, email, phone, gender } = req.body; // Ensure these fields exist in the request

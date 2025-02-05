@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Announcement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .form-container {
+            width: 60%;
+            margin: 30px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .alert {
+            text-align: center;
+            color: #ff0000;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Campus Portal</h1>
+    </header>
+
+    <h2>Create Announcement</h2>
+
+    <div class="form-container">
+        <form id="announcementForm">
+            <label for="title">Title:</label>
+            <input type="text" id="title" required><br>
+
+            <label for="content">Content:</label>
+            <textarea id="content" required></textarea><br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("announcementForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+
+            const response = await fetch("http://localhost:3000/announcements", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, content }),
+            });
+
+            if (response.ok) {
+                alert("Announcement created successfully!");
+                window.location.href = "admin-dashboard2.html"; // Redirect back to the dashboard
+            } else {
+                alert("Error creating announcement.");
+            }
+        });
+    </script>
+</body>
+</html>
