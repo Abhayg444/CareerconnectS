@@ -57,6 +57,19 @@ const announcementSchema = new mongoose.Schema({
 // Create the Announcement model
 const Announcement = mongoose.model('Announcement', announcementSchema);
 
+// Define the Company schema
+const companySchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    company_add: String,
+    phone: String,
+    username: { type: String, unique: true },
+    password: String, // The password will be hashed
+});
+
+// Create the Company model
+const Company = mongoose.model('Company', companySchema);
+
 // Create an announcement (Admin only)
 app.post('/announcements', async (req, res) => {
     try {
@@ -294,6 +307,77 @@ app.put('/students/:username', async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({ message: 'Server error during student update', error: err.message });
+    }
+});
+
+// Company Registration Route
+app.post('/company/register', async (req, res) => {
+    try {
+        const { name, email, company_add, phone, username, password } = req.body;
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newCompany = new Company({
+            name,
+            email,
+            company_add,
+            phone,
+            username,
+            password: hashedPassword,
+        });
+
+        await newCompany.save();
+        res.status(201).json({ message: 'Company registration successful' });
+    } catch (error) {
+        if (error.code === 11000) {
+            res.status(400).json({ message: 'Username already exists' });
+        } else {
+            res.status(500).json({ message: 'Error during registration', error });
+        }
+    }
+});
+
+// Company Login Route
+app.post('/company/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const company = await Company.findOne({ username });
+
+        if (!company) {
+            return res.status(401).json({ message: 'Invalid usernames or password' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, company.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid usernamee or password' });
+        }
+
+        res.status(200).json({
+            message: 'Company login successful',
+            company: {
+                name: company.name,
+                
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error during login', error });
+    }
+});
+
+// Company Announcement Route
+app.post('/company/announcements', async (req, res) => {
+    try {
+        const { title, content } = req.body;
+
+        // Assuming company should be authenticated to create an announcement
+        const newAnnouncement = new Announcement({ title, content });
+        await newAnnouncement.save();
+        res.status(201).json({ message: 'Announcement created successfully by company' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating announcement', error });
     }
 });
 

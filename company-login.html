@@ -1,50 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Login/Register</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <!-- CSS for styling -->
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
 
         .form-container {
-            background-color: white;
-            padding: 30px;
+            background-color: #fff;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            width: 350px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
         }
 
-        .form-container h2 {
+        h1 {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .form-container form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-container input {
-            margin-bottom: 15px;
+        input {
+            width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            margin: 10px 0;
             border-radius: 5px;
+            border: 1px solid #ddd;
         }
 
-        .form-container button {
+        button {
+            width: 100%;
             padding: 10px;
             background-color: #007bff;
             color: white;
@@ -53,97 +45,84 @@
             cursor: pointer;
         }
 
-        .form-container button:hover {
+        button:hover {
             background-color: #0056b3;
         }
 
-        .form-container .toggle-btn {
-            background: none;
-            border: none;
-            color: #007bff;
-            text-decoration: underline;
+        .toggle-link {
+            text-align: center;
+            margin-top: 10px;
             cursor: pointer;
-            padding: 0;
+            color: #007bff;
         }
 
         .error-message {
             color: red;
             text-align: center;
-            display: none;
+            margin-top: 10px;
         }
     </style>
 </head>
-
 <body>
-    <div class="form-container" id="loginFormContainer">
-        <h2>Company Login</h2>
-        <form id="companyLoginForm" onsubmit="return validateLoginForm()">
-            <input type="text" id="loginUsername" placeholder="Username" required>
-            <input type="password" id="loginPassword" placeholder="Password" required>
-            <div class="error-message" id="loginErrorMessage">Invalid username or password.</div>
+    <div class="form-container">
+        <h1 id="form-title">Company Login</h1>
+        <form id="company-form">
+            <div class="register-fields" style="display: none;">
+                <input type="text" id="companyName" placeholder="Company Name">
+                <input type="email" id="email" placeholder="Email">
+                <input type="text" id="companyAddress" placeholder="Company Address">
+                <input type="text" id="phone" placeholder="Phone Number">
+            </div>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
-        <p style="text-align:center;">Don't have an account? <button class="toggle-btn" onclick="toggleForms()">Register here</button></p>
+        <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
+        <div class="error-message" id="error-message"></div>
     </div>
-
-    <div class="form-container" id="registerFormContainer" style="display:none;">
-        <h2>Company Register</h2>
-        <form id="companyRegisterForm" onsubmit="return validateRegisterForm()">
-            <input type="text" id="companyName" placeholder="Company Name" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="companyAddress" placeholder="Company Address" required>
-            <input type="text" id="registerUsername" placeholder="Username" required>
-            <input type="password" id="registerPassword" placeholder="Password" required>
-            <div class="error-message" id="registerErrorMessage">Please fill out all fields.</div>
-            <button type="submit">Register</button>
-        </form>
-        <p style="text-align:center;">Already have an account? <button class="toggle-btn" onclick="toggleForms()">Login here</button></p>
-    </div>
-
-    <!-- JavaScript for form switching and validation -->
     <script>
-        function toggleForms() {
-            var loginForm = document.getElementById('loginFormContainer');
-            var registerForm = document.getElementById('registerFormContainer');
-            if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
+        let isLogin = true;
+        const formTitle = document.getElementById('form-title');
+        const toggleLink = document.getElementById('toggle-link');
+        const registerFields = document.querySelector('.register-fields');
+        const formButton = document.querySelector('button');
+
+        toggleLink.addEventListener('click', () => {
+            isLogin = !isLogin;
+            formTitle.textContent = isLogin ? 'Company Login' : 'Company Register';
+            toggleLink.textContent = isLogin ? "Don't have an account? Register here." : "Already have an account? Login here.";
+            registerFields.style.display = isLogin ? 'none' : 'block';
+            formButton.textContent = isLogin ? 'Login' : 'Register';
+        });
+
+        document.getElementById('company-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            let payload = { username, password };
+
+            if (!isLogin) {
+                const companyName = document.getElementById('companyName').value;
+                const email = document.getElementById('email').value;
+                const companyAddress = document.getElementById('companyAddress').value;
+                const phone = document.getElementById('phone').value;
+                payload = { companyName, email, companyAddress, phone, username, password };
             }
-        }
 
-        function validateLoginForm() {
-            var username = document.getElementById('loginUsername').value;
-            var password = document.getElementById('loginPassword').value;
+            const url = isLogin ? 'http://localhost:3000/company/login' : 'http://localhost:3000/company/register';
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
 
-            // Simple client-side validation for demonstration purposes
-            if (username === "company" && password === "company123") {
-                alert("Login successful!");
-                return true;
-            } else {
-                document.getElementById('loginErrorMessage').style.display = 'block';
-                return false;
+            const data = await response.json();
+            document.getElementById('error-message').textContent = response.ok ? '' : data.message;
+            if (response.ok) {
+                alert(data.message);
+                if (isLogin) window.location.href = './company-dashboard.html';
             }
-        }
-
-        function validateRegisterForm() {
-            var companyName = document.getElementById('companyName').value;
-            var email = document.getElementById('email').value;
-            var companyAddress = document.getElementById('companyAddress').value;
-            var username = document.getElementById('registerUsername').value;
-            var password = document.getElementById('registerPassword').value;
-
-            if (companyName && email && companyAddress && username && password) {
-                alert("Registration successful!");
-                return true;
-            } else {
-                document.getElementById('registerErrorMessage').style.display = 'block';
-                return false;
-            }
-        }
+        });
     </script>
 </body>
-
 </html>
