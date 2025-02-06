@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar h2 { color: #fff; text-align: center; margin-bottom: 20px; }
+        .sidebar a {
+            color: #bdc3c7; text-decoration: none; font-size: 18px; padding: 12px 15px;
+            display: block; border-radius: 5px; transition: 0.3s;
+        }
+        .sidebar a:hover { background-color: #34495e; color: #fff; transform: translateX(5px); }
+        .profile-container {
+            margin-left: 250px; padding: 40px; width: calc(100% - 250px);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .profile-card {
+            background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px; width: 500px;
+        }
+        .profile-card h1 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
+        .profile-field { margin-bottom: 15px; }
+        .profile-field label { display: block; margin-bottom: 5px; color: #2c3e50; }
+        .profile-field input {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;
+        }
+        .profile-field input:disabled { background-color: #f1f1f1; }
+        .profile-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-edit { background-color: #4CAF50; color: white; }
+        .btn-save { background-color: #2196F3; color: white; display: none; }
+        .btn-cancel { background-color: #f44336; color: white; display: none; }
+        .error-message { color: red; text-align: center; margin-top: 10px; }
+        .success-message { color: green; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Student Dashboard</h2>
+        <a href="student-dashboard.html">Dashboard</a>
+        <a href="student-profile.html">Student Profile</a>
+        <a href="logout.html" id="logout-link">Logout</a>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <h1>Student Profile</h1>
+            <form id="profile-form">
+                <div class="profile-field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" readonly>
+                </div>
+                <div class="profile-field">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="college">College</label>
+                    <input type="text" id="college" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="gender">Gender</label>
+                    <div>
+                        <input type="radio" id="male" name="gender" value="male" disabled>
+                        <label for="male">Male</label>
+                        <input type="radio" id="female" name="gender" value="female" disabled>
+                        <label for="female">Female</label>
+                    </div>
+                </div>
+            </form>
+            <div class="profile-buttons">
+                <button id="edit-btn" class="btn btn-edit">Edit Profile</button>
+                <button id="save-btn" class="btn btn-save">Save Changes</button>
+                <button id="cancel-btn" class="btn btn-cancel">Cancel</button>
+            </div>
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </div>
+    </div>
+
+    <script>
+        let originalProfileData = {};
+
+function checkAuth() {
+    const studentData = JSON.parse(localStorage.getItem('studentData'));
+    if (!studentData || !studentData.username) {
+        window.location.href = 'student-login.html';
+        return false;
+    }
+    return studentData;
+}
+
+async function fetchProfile() {
+    const studentData = checkAuth();
+    if (!studentData) return;
+
+    try {
+        const response = await fetch(`http://localhost:3000/student/profile?username=${studentData.username}`);
+        if (!response.ok) throw new Error("Failed to fetch profile");
+
+        const profileData = await response.json();
+        originalProfileData = { ...profileData };
+
+        document.getElementById('username').value = profileData.username;
+        document.getElementById('name').value = profileData.name || '';
+        document.getElementById('email').value = profileData.email || '';
+        document.getElementById('phone').value = profileData.phone || '';
+        document.getElementById('department').value = profileData.department || '';
+        document.getElementById('college').value = profileData.college || '';
+
+        if (profileData.gender === 'male') document.getElementById('male').checked = true;
+        if (profileData.gender === 'female') document.getElementById('female').checked = true;
+
+    } catch (error) {
+        showError('Error loading profile: ' + error.message);
+    }
+}
+
+function toggleEditMode(isEditing) {
+    const fields = ['name', 'email', 'phone', 'department', 'college'];
+    fields.forEach(field => {
+        document.getElementById(field).disabled = !isEditing;
+    });
+
+    document.querySelectorAll('input[name="gender"]').forEach(input => {
+        input.disabled = !isEditing;
+    });
+
+    document.getElementById('edit-btn').style.display = isEditing ? 'none' : 'block';
+    document.getElementById('save-btn').style.display = isEditing ? 'block' : 'none';
+    document.getElementById('cancel-btn').style.display = isEditing ? 'block' : 'none';
+}
+
+async function saveProfile() {
+    const studentData = checkAuth();
+    if (!studentData) return;
+
+    const updatedProfile = {
+        username: studentData.username,
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        department: document.getElementById('department').value,
+        college: document.getElementById('college').value,
+        gender: document.querySelector('input[name="gender"]:checked').value
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/student/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedProfile)
+        });
+
+        if (!response.ok) throw new Error("Failed to update profile");
+
+        const result = await response.json();
+        showSuccess('Profile updated successfully');
+        originalProfileData = { ...updatedProfile };
+        toggleEditMode(false);
+    } catch (error) {
+        showError('Error updating profile: ' + error.message);
+    }
+}
+
+function cancelEdit() {
+    document.getElementById('name').value = originalProfileData.name || '';
+    document.getElementById('email').value = originalProfileData.email || '';
+    document.getElementById('phone').value = originalProfileData.phone || '';
+    document.getElementById('department').value = originalProfileData.department || '';
+    document.getElementById('college').value = originalProfileData.college || '';
+
+    const genderInputs = document.querySelectorAll('input[name="gender"]');
+    genderInputs.forEach(input => {
+        input.checked = input.value === originalProfileData.gender;
+    });
+
+    toggleEditMode(false);
+}
+
+function showError(message) {
+    const errorElement = document.getElementById('error-message');
+    const successElement = document.getElementById('success-message');
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    successElement.style.display = 'none';
+}
+
+function showSuccess(message) {
+    const errorElement = document.getElementById('error-message');
+    const successElement = document.getElementById('success-message');
+    successElement.textContent = message;
+    successElement.style.display = 'block';
+    errorElement.style.display = 'none';
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    fetchProfile();
+    document.getElementById('edit-btn').addEventListener('click', () => toggleEditMode(true));
+    document.getElementById('save-btn').addEventListener('click', saveProfile);
+    document.getElementById('cancel-btn').addEventListener('click', cancelEdit);
+});
+    </script>
+</body>
+</html>

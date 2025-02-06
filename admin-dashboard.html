@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+        footer {
+            color: #bdc3c7;
+            font-size: 14px;
+            text-align: center;
+            margin-top: auto;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            color: #fff;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 12px 15px;
+            display: block;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #34495e;
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 40px;
+            width: calc(100% - 250px);
+        }
+
+        .main-content h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .card p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .card .count {
+            font-size: 48px;
+            color: #007bff;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Student List */
+        .student-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .student-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .student-list li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-list .student-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-list .student-info p {
+            margin: 2px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-btn {
+            background-color: #28a745;
+        }
+
+        .edit-btn:hover {
+            background-color: #218838;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        .modal .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .modal .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .modal .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal .modal-content button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal .modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-content {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 180px;
+            }
+
+            .main-content {
+                margin-left: 180px;
+                width: calc(100% - 180px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="addashboard.html">Dashboard</a>
+       <li> <a href="admin-dashboard.html">Manage Students</a></li>
+        <a href="adminprofile.html">Admin Profile</a>
+        <li><a href="admin-dashboard2.html" id="announcements">Announcements</a></li>
+        <li><a href="admin-login.html" id="logout">Logout</a></li>
+        <footer>&copy; 2024 CareerConnect</footer>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Manage Student Details</h1>
+
+        <!-- Student Count Section -->
+        <div class="card student-count">
+            <h2>Total Registered Students</h2>
+            <div class="count" id="student-count">Loading...</div>
+        </div>
+
+        <!-- Student List Section -->
+        <div class="card student-list">
+            <h2>Student Details</h2>
+            <ul id="students-container"></ul>
+        </div>
+    </div>
+
+    <!-- Modal for editing student details -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Edit Student</h2>
+            <form id="editStudentForm">
+                <label for="editName">Name:</label>
+                <input type="text" id="editName" name="name" required>
+
+                <label for="editEmail">Email:</label>
+                <input type="email" id="editEmail" name="email" required>
+
+                <label for="editPhone">Phone:</label>
+                <input type="text" id="editPhone" name="phone" required>
+
+                <label for="editDepartment">Department:</label>
+                <input type="text" id="editDepartment" name="department" required>
+
+                <button type="button" onclick="updateStudent()">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add your JavaScript functions here to fetch data and interact with the backend
+        let currentStudentUsername = ''; // Store the current student's username
+
+        // Function to fetch and display admin profile
+        async function fetchAdminProfile() {
+            try {
+                const response = await fetch('http://localhost:3000/admin/profile');
+                const data = await response.json();
+                
+            
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to fetch and display the number of students
+        async function fetchStudentCount() {
+            try {
+                const response = await fetch('http://localhost:3000/students/count');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('student-count').textContent = data.count;
+                } else {
+                    alert('Error fetching student count');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to fetch and display students
+        async function fetchStudents() {
+            try {
+                const response = await fetch('http://localhost:3000/students');
+                const data = await response.json();
+
+                if (response.ok) {
+                    const studentsContainer = document.getElementById('students-container');
+                    studentsContainer.innerHTML = ''; // Clear existing content
+                    
+                    data.forEach(student => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div>
+                                <strong>${student.name}</strong>
+                                <p>Email: ${student.email}</p>
+                                <p>Phone: ${student.phone}</p>
+                                <p>Department:${student.department}</p>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="edit-btn" onclick="editStudent('${student.username}', '${student.name}', '${student.email}', '${student.phone}','${student.department}')">Edit</button>
+                                <button class="delete-btn" onclick="deleteStudent('${student.username}')">Delete</button>
+                            </div>
+                        `;
+                        studentsContainer.appendChild(li);
+                    });
+                } else {
+                    alert('Error fetching student details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to open edit modal
+        function editStudent(username, name, email, phone, department) {
+            currentStudentUsername = username; // Set the current student's username for the update
+            document.getElementById('editName').value = name;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editPhone').value = phone;
+            document.getElementById('editDepartment').value = department;
+            document.getElementById('editModal').style.display = 'block'; // Show the modal
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none'; // Hide the modal
+        }
+
+        // Function to update student details
+        async function updateStudent() {
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const phone = document.getElementById('editPhone').value;
+            const department = document.getElementById('editDepartment').value;
+            try {
+                const response = await fetch(`http://localhost:3000/students/${currentStudentUsername}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, phone, department }),
+                });
+
+                if (response.ok) {
+                    alert('Student updated successfully');
+                    closeModal(); // Close modal after successful update
+                    fetchStudents(); // Refresh student list
+                } else {
+                    alert('Error updating student');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to delete a student
+        async function deleteStudent(username) {
+            const confirmDelete = confirm('Are you sure you want to delete this student?');
+            if (confirmDelete) {
+                try {
+                    const response = await fetch(`http://localhost:3000/students/${username}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('Student deleted successfully');
+                        fetchStudents(); // Refresh student list after deletion
+                    } else {
+                        alert('Error deleting student');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
+
+        // Initial function calls to populate the admin dashboard
+        fetchAdminProfile();
+        fetchStudentCount();
+        fetchStudents();
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        document.getElementById('logout').addEventListener('click', function () {
+            localStorage.clear();  // Clear stored data on logout
+            window.location.href = "admin-login.html";
+        });
+        document.getElementById('announcements').addEventListener('click', function () {
+            localStorage.clear();  // Clear stored data on logout
+            window.location.href = "Announcement.html";
+        });
+    </script>
+</body>
+</html>

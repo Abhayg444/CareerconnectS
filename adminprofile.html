@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar h2 { color: #fff; text-align: center; margin-bottom: 20px; }
+        .sidebar a {
+            color: #bdc3c7; text-decoration: none; font-size: 18px; padding: 12px 15px;
+            display: block; border-radius: 5px; transition: 0.3s;
+        }
+        .sidebar a:hover { background-color: #34495e; color: #fff; transform: translateX(5px); }
+        .profile-container {
+            margin-left: 250px; padding: 40px; width: calc(100% - 250px);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .profile-card {
+            background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px; width: 500px;
+        }
+        .profile-card h1 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
+        .profile-field { margin-bottom: 15px; }
+        .profile-field label { display: block; margin-bottom: 5px; color: #2c3e50; }
+        .profile-field input {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;
+        }
+        .profile-field input:disabled { background-color: #f1f1f1; }
+        .profile-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-edit { background-color: #4CAF50; color: white; }
+        .btn-save { background-color: #2196F3; color: white; display: none; }
+        .btn-cancel { background-color: #f44336; color: white; display: none; }
+        .error-message { color: red; text-align: center; margin-top: 10px; }
+        .success-message { color: green; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="addashboard.html">Dashboard</a>
+        <a href="admin-dashboard.html">Manage Students</a>
+        <a href="admin-profile.html">Admin Profile</a>
+        <a href="admin-dashboard2.html">Announcements</a>
+        <a href="#" id="logout-link">Logout</a>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <h1>Admin Profile</h1>
+            <form id="profile-form">
+                <div class="profile-field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" readonly>
+                </div>
+                <div class="profile-field">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" disabled>
+                </div>
+                <div class="profile-field">
+                    <label for="position">Position</label>
+                    <input type="text" id="position" disabled>
+                </div>
+            </form>
+            <div class="profile-buttons">
+                <button id="edit-btn" class="btn btn-edit">Edit Profile</button>
+                <button id="save-btn" class="btn btn-save">Save Changes</button>
+                <button id="cancel-btn" class="btn btn-cancel">Cancel</button>
+            </div>
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Check admin authentication status
+        function checkAuth() {
+            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            if (!adminData || !adminData.username) {
+                window.location.href = 'admin-login.html';
+                return false;
+            }
+            return adminData;
+        }
+
+        // DOM Elements
+        const usernameInput = document.getElementById('username');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const positionInput = document.getElementById('position');
+        const editBtn = document.getElementById('edit-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        let originalProfileData = {};
+
+        // Fetch admin profile data
+        async function fetchAdminProfile() {
+            const adminData = checkAuth();
+            if (!adminData) return;
+
+            try {
+                const response = await fetch(`http://localhost:3000/admin/profile?username=${adminData.username}`);
+                if (!response.ok) throw new Error("Failed to fetch profile");
+
+                const profileData = await response.json();
+                usernameInput.value = profileData.username;
+                nameInput.value = profileData.name || '';
+                emailInput.value = profileData.email || '';
+                phoneInput.value = profileData.phone || '';
+                positionInput.value = profileData.position || '';
+
+                originalProfileData = { ...profileData };
+            } catch (error) {
+                errorMessage.textContent = error.message;
+            }
+        }
+
+        // Toggle edit mode
+        function toggleEditMode(isEditing) {
+            [nameInput, emailInput, phoneInput, positionInput].forEach(field => {
+                field.disabled = !isEditing;
+            });
+
+            editBtn.style.display = isEditing ? 'none' : 'block';
+            saveBtn.style.display = isEditing ? 'block' : 'none';
+            cancelBtn.style.display = isEditing ? 'block' : 'none';
+
+            if (!isEditing) {
+                errorMessage.textContent = '';
+                successMessage.textContent = '';
+            }
+        }
+
+        // Save profile changes
+        async function saveProfile() {
+            const adminData = checkAuth();
+            if (!adminData) return;
+
+            const updatedProfile = {
+                username: adminData.username,
+                name: nameInput.value,
+                email: emailInput.value,
+                phone: phoneInput.value,
+                position: positionInput.value
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/admin/update', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedProfile)
+                });
+
+                if (!response.ok) throw new Error("Failed to update profile");
+
+                const result = await response.json();
+                successMessage.textContent = "Profile updated successfully";
+                toggleEditMode(false);
+                originalProfileData = { ...updatedProfile };
+            } catch (error) {
+                errorMessage.textContent = error.message;
+            }
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            nameInput.value = originalProfileData.name || '';
+            emailInput.value = originalProfileData.email || '';
+            phoneInput.value = originalProfileData.phone || '';
+            positionInput.value = originalProfileData.position || '';
+            toggleEditMode(false);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', fetchAdminProfile);
+        editBtn.addEventListener('click', () => toggleEditMode(true));
+        saveBtn.addEventListener('click', saveProfile);
+        cancelBtn.addEventListener('click', cancelEdit);
+
+        // Logout handler
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'admin-login.html';
+        });
+    </script>
+</body>
+</html>
