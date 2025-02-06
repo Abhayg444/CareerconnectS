@@ -494,44 +494,60 @@ function getCountries() {
   })
 }
 function getStates() {
+  const country = $('#country').val();
+  if (!country) return;
+
   $.ajax({
-    type: 'get',
-    url: 'https://www.universal-tutorial.com/api/states/' + $('#country').val(),
+    type: 'GET',
+    url: `https://api.countrystatecity.in/v1/countries/${country}/states`,
+    headers: {
+      "X-CSCAPI-KEY": "YOUR_API_KEY" // Replace with a valid API key from https://www.countrystatecity.in/
+    },
     success: function (data) {
-      $('#state').empty();
+      $('#state').empty().append('<option value="">Select State</option>');
+
       data.forEach((ele) => {
-        $('#state').append(`<option value="${ele.state_name}">${ele.state_name}</option>`);
-      })
-      getCities();
+        $('#state').append(`<option value="${ele.iso2}">${ele.name}</option>`);
+      });
+
+      $('#city').empty().append('<option value="">Select City</option>'); // Reset city dropdown
     },
     error: function (error) {
-      console.log(error);
-    },
-    headers: {
-      "Authorization": "Bearer " + auth_token,
-      "Accept": "application/json"
+      console.error("Error fetching states:", error);
     }
-  })
+  });
 }
+
 function getCities() {
+  const country = $('#country').val();
+  const state = $('#state').val();
+  if (!country || !state) return;
+
   $.ajax({
-    type: 'get',
-    url: 'https://www.universal-tutorial.com/api/cities/' + $('#state').val(),
+    type: 'GET',
+    url: `https://api.countrystatecity.in/v1/countries/${country}/states/${state}/cities`,
+    headers: {
+      "X-CSCAPI-KEY": "YOUR_API_KEY" // Replace with a valid API key
+    },
     success: function (data) {
-      $('#city').empty();
+      $('#city').empty().append('<option value="">Select City</option>');
+
       data.forEach((ele) => {
-        $('#city').append(`<option value="${ele.city_name}">${ele.city_name}</option>`);
-      })
+        $('#city').append(`<option value="${ele.name}">${ele.name}</option>`);
+      });
     },
     error: function (error) {
-      console.log(error);
-    },
-    headers: {
-      "Authorization": "Bearer " + auth_token,
-      "Accept": "application/json"
+      console.error("Error fetching cities:", error);
     }
-  })
+  });
 }
+
+// Event Listeners
+$(document).ready(function () {
+  $('#country').change(getStates);
+  $('#state').change(getCities);
+});
+
 
 //  **********    **********    Profile Images    **********    **********
 
