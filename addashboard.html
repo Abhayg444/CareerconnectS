@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        footer {
+            color: #bdc3c7;
+            font-size: 14px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            color: #fff;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 12px 15px;
+            display: block;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #34495e;
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 40px;
+            width: calc(100% - 250px);
+        }
+
+        .main-content h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            color: #555;
+        }
+
+        .card .count {
+            font-size: 48px;
+            color: #007bff;
+            margin-top: 10px;
+        }
+
+        .filter-container {
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-container label {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-right: 10px;
+        }
+
+        .filter-container select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            outline: none;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+
+        .student-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .student-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .student-list li {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .student-list li:hover {
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .charts-section {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+            }
+            .main-content {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+                width: calc(100% - 180px);
+            }
+            .filter-container label,
+            .filter-container select {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="addashboard.html">Dashboard</a>
+        <a href="admin-dashboard.html">Manage Students</a>
+        <a href="adminprofile.html">Admin Profile</a>
+        <a href="admin-dashboard2.html">Announcements</a>
+        <a href="admin-login.html">Logout</a>
+        <footer>&copy; 2024 CareerConnect</footer>
+    </div>
+
+    <div class="main-content">
+        <h1>All Students</h1>
+
+        <div class="card">
+            <h2>Total Registered Students</h2>
+            <div class="count" id="student-count">0</div>
+        </div>
+
+        <div class="filter-container">
+            <label for="departmentFilter">Filter by Department:</label>
+            <select id="departmentFilter" onchange="filterStudents()">
+                <option value="All">All Departments</option>
+                <option value="COMPS">COMPS</option>
+                <option value="MECH">MECH</option>
+                <option value="EXTC">EXTC</option>
+                <option value="AI&DS">AI&DS</option>
+                <option value="IT">IT</option>
+                <option value="CIVIL">CIVIL</option>
+            </select>
+
+            <label for="genderFilter">Filter by Gender:</label>
+            <select id="genderFilter" onchange="filterStudents()">
+                <option value="All">All Genders</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="student-list">
+            <h3>Student List</h3>
+            <ul id="studentsContainer"></ul>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3>Department Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Gender Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let departmentChart;
+        let genderChart;
+
+        function initializeCharts() {
+            const deptCtx = document.getElementById('departmentChart').getContext('2d');
+            departmentChart = new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['COMPS', 'MECH', 'EXTC', 'AI&DS', 'IT', 'CIVIL'],
+                    datasets: [{
+                        label: 'Students per Department',
+                        data: [],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF9F40'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            const genderCtx = document.getElementById('genderChart').getContext('2d');
+            genderChart = new Chart(genderCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Male', 'Female', 'Other'],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#36A2EB',
+                            '#FF6384',
+                            '#FFCE56'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(filteredStudents) {
+            const deptCounts = {
+                'COMPS': 0,
+                'MECH': 0,
+                'EXTC': 0,
+                'AI&DS': 0,
+                'IT': 0,
+                'CIVIL': 0
+            };
+
+            filteredStudents.forEach(student => {
+                if (deptCounts.hasOwnProperty(student.department.toUpperCase())) {
+                    deptCounts[student.department.toUpperCase()]++;
+                }
+            });
+
+            departmentChart.data.datasets[0].data = Object.values(deptCounts);
+            departmentChart.update();
+
+            const genderCounts = {
+                'Male': 0,
+                'Female': 0,
+                'Other': 0
+            };
+
+            filteredStudents.forEach(student => {
+                if (genderCounts.hasOwnProperty(student.gender)) {
+                    genderCounts[student.gender]++;
+                }
+            });
+
+            genderChart.data.datasets[0].data = Object.values(genderCounts);
+            genderChart.update();
+        }
+
+        async function fetchStudentCount() {
+            try {
+                const response = await fetch('http://localhost:3000/students/count');
+                const data = await response.json();
+                document.getElementById('student-count').textContent = data.count;
+            } catch (error) {
+                console.error('Error fetching student count:', error);
+                document.getElementById('student-count').textContent = 'Error';
+            }
+        }
+
+        async function fetchStudents() {
+            try {
+                const response = await fetch('http://localhost:3000/students');
+                const data = await response.json();
+                students = data;
+                renderStudents(students);
+                updateCharts(students);
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+
+        function filterStudents() {
+            const department = document.getElementById('departmentFilter').value;
+            const gender = document.getElementById('genderFilter').value;
+
+            const filtered = students.filter(student => {
+                return (department === 'All' || student.department === department) &&
+                       (gender === 'All' || student.gender === gender);
+            });
+
+            renderStudents(filtered);
+            updateCharts(filtered);
+        }
+
+        function renderStudents(studentList) {
+            const container = document.getElementById('studentsContainer');
+            container.innerHTML = '';
+
+            studentList.forEach(student => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <strong>${student.name}</strong>
+                    <p>Email: ${student.email}</p>
+                    <p>Phone: ${student.phone}</p>
+                    <p>Department: ${student.department}</p>
+                    <p>Gender: ${student.gender}</p>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        window.onload = () => {
+            initializeCharts();
+            fetchStudentCount();
+            fetchStudents();
+        };
+    </script>
+</body>
+</html>
