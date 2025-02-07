@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login/Register</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 350px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container input,
+        .form-container select {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-container button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-container .toggle-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            display: none;
+        }
+
+        .gender-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-container input[type="radio"] {
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .form-container label {
+            margin-right: 20px;
+            display: inline-block;
+            font-weight: normal;
+        }
+
+        /* Style for Back to Index link */
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #007bff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container" id="loginFormContainer">
+        <h2>Student Login</h2>
+        <form id="studentLoginForm" onsubmit="validateLoginForm(event)">
+            <input type="text" id="loginUsername" placeholder="Username" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <div class="error-message" id="loginErrorMessage">Invalid username or password.</div>
+            <button type="submit">Login</button>
+        </form>
+        <p style="text-align:center;">Don't have an account? <button class="toggle-btn" onclick="toggleForms()">Register here</button></p>
+        <!-- Back to Index Link -->
+        <div class="back-link">
+            <a href="index.html">Back to Index</a>
+        </div>
+    </div>
+
+    <div class="form-container" id="registerFormContainer" style="display:none;">
+        <h2>Student Register</h2>
+        <form id="studentRegisterForm" onsubmit="validateRegisterForm(event)">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="tel" id="phone" placeholder="Phone Number" required>
+            <input type="date" id="dob" placeholder="Date of Birth" required>
+            <input type="text" id="college" placeholder="College Name" required>
+
+            <!-- Department Dropdown -->
+            <select id="department" required>
+                <option value="">Select Department</option>
+                <option value="COMPS">COMPS</option>
+                <option value="MECH">MECH</option>
+                <option value="EXTC">EXTC</option>
+                <option value="IT">IT</option>
+                <option value="CIVIL">CIVIL</option>
+                <option value="ELX">ELX</option>
+                <option value="AI&DS">AI&DS</option>
+            </select>
+
+            <!-- Gender Radio Buttons -->
+            <div class="gender-container">
+                <div>
+                    <input type="radio" id="male" name="gender" value="Male" required>
+                    <label for="Male">Male</label>
+                </div>
+                <div>
+                    <input type="radio" id="female" name="gender" value="Female" required>
+                    <label for="Female">Female</label>
+                </div>
+            </div>
+
+            <input type="text" id="registerUsername" placeholder="Username" required>
+            <input type="password" id="registerPassword" placeholder="Password" required>
+            <div class="error-message" id="registerErrorMessage">Please fill out all fields.</div>
+            <button type="submit">Register</button>
+        </form>
+        <p style="text-align:center;">Already have an account? <button class="toggle-btn" onclick="toggleForms()">Login here</button></p>
+        <!-- Back to Index Link -->
+        <div class="back-link">
+            <a href="index.html">Back to Index</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            var loginForm = document.getElementById('loginFormContainer');
+            var registerForm = document.getElementById('registerFormContainer');
+            document.getElementById('loginErrorMessage').style.display = 'none'; // Hide error on toggle
+            document.getElementById('registerErrorMessage').style.display = 'none'; // Hide error on toggle
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function validateLoginForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+            var username = document.getElementById('loginUsername').value;
+            var password = document.getElementById('loginPassword').value;
+        
+            fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Login successful') {
+                    // Redirect to dashboard page
+                    window.location.href = "studentdashboard.html";  // Ensure "studentdashboard.html" exists
+                } else {
+                    document.getElementById('loginErrorMessage').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loginErrorMessage').style.display = 'block';
+                document.getElementById('loginErrorMessage').innerText = 'An error occurred during login.';
+            });
+        }
+        
+        function validateRegisterForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var phone = document.getElementById('phone').value;
+            var dob = document.getElementById('dob').value;
+            var college = document.getElementById('college').value;
+            var department = document.getElementById('department').value;
+            var gender = document.querySelector('input[name="gender"]:checked')?.value;
+            var username = document.getElementById('registerUsername').value;
+            var password = document.getElementById('registerPassword').value;
+
+            if (name && email && phone && dob && college && department && gender && username && password) {
+                fetch('http://localhost:3000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, phone, dob, college, department, gender, username, password }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Registration successful') {
+                        alert(data.message); // Display success message from server
+                        toggleForms(); // Switch to login form after registration
+                    } else {
+                        document.getElementById('registerErrorMessage').style.display = 'block';
+                        document.getElementById('registerErrorMessage').innerText = data.message;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error during registration');
+                });
+            } else {
+                document.getElementById('registerErrorMessage').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>
