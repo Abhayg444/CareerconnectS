@@ -197,6 +197,4 @@ if selected_qid:
                         st.success(f"Test Case {idx + 1} Passed")
                     else:
                         st.error(f"Test Case {idx + 1} Failed")
-# Run the app on port 8502
-if __name__ == "__main__":
-    st.run(port=8501)
+
