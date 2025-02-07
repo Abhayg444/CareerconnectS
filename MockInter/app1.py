@@ -222,7 +222,7 @@ if "current_interview" in st.session_state:
 if st.session_state.interviews:
     st.subheader("Previous Mock Interviews")
     for i, interview in enumerate(st.session_state.interviews):
-        with st.expander(f"{interview['role']} - {interview['Experience']} Years (Created At: {datetime.now().strftime('%Y-%m-%d')})"):
+        with st.expander(f"{interview['role']} - {interview['experience']} Years (Created At: {datetime.now().strftime('%Y-%m-%d')})"):
             st.write(f"Tech Stack: {interview['stack']}")
             for response in interview["responses"]:
                 st.write(f"**Q:** {response['question']}")
