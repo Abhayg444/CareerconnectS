@@ -162,8 +162,8 @@
         <ul>
           <li><a href="#" id="dashboard">Dashboard</a></li>
           <li><a href="#" id="aptitude">Aptitude</a></li>
-          <li><a href="http://localhost:8501" id="tech">DSA Practice</a></li>
-          <li><a href="http://localhost:8504" id="Mockinterview">Mock-Interview</a></li>
+          <li><a href="#" id="tech">DSA Practice</a></li>
+          <li><a href="#" id="Mockinterview">Mock-Interview</a></li>
           <li><a href="#" id="resume">Resume Builder</a></li>
           <li><a href="#" id="resumeats">Resume Scanner</a></li>
           <li><a href="#" id="announcements">Announcements</a></li>
@@ -186,18 +186,17 @@
 
         // Fetch the full name from localStorage
         const fullName = localStorage.getItem('fullName');
-
-        // If a full name exists, set it in the span
         if (fullName) {
           document.getElementById('fullName').textContent = fullName;
         }
 
+        // Dashboard Section
         document.getElementById('dashboard').addEventListener('click', function () {
           content.innerHTML =
             '<h2>Dashboard</h2><p>Welcome to your dashboard. Here you will find an overview of your activities and performance.</p>';
         });
 
-        // Aptitude button with two inner buttons
+        // Aptitude Section with two inner buttons
         document.getElementById('aptitude').addEventListener('click', function (event) {
           event.preventDefault();
           content.innerHTML = `
@@ -206,18 +205,20 @@
             <button id="dashboardButton" class="btn">Result Analysis & Visualization</button>
           `;
           document.getElementById('quizButton').addEventListener('click', function () {
-            window.location.href = 'http://localhost:8502';
+            window.location.href = 'http://localhost:8501';
           });
           document.getElementById('dashboardButton').addEventListener('click', function () {
-            window.location.href = 'http://localhost:8503';
+            window.location.href = 'http://localhost:8502';
           });
         });
 
+        // Mock-Interview Section
         document.getElementById('Mockinterview').addEventListener('click', function () {
           content.innerHTML =
             '<h2>Assignments</h2><p>Your assignments and deadlines will be displayed here.</p>';
         });
 
+        // Resume Builder Section
         document.getElementById('resume').addEventListener('click', function () {
           content.innerHTML = `
             <h2>Resume</h2>
@@ -232,6 +233,7 @@
           `;
         });
 
+        // Resume Scanner Section
         document.getElementById('resumeats').addEventListener('click', function () {
           content.innerHTML = `
             <h2>Resume</h2>
@@ -246,11 +248,9 @@
           `;
         });
 
-        // Fetch and display the announcements
+        // Announcements Section with fetch request
         document.getElementById('announcements').addEventListener('click', function () {
           content.innerHTML = '<h2>Announcements</h2><p>Loading announcements...</p>';
-
-          // Fetch the announcements from the server
           fetch('http://localhost:3000/announcements')
             .then((response) => response.json())
             .then((data) => {
@@ -261,9 +261,7 @@
                     <div class="announcement">
                       <h3>${announcement.title}</h3>
                       <p>${announcement.content}</p>
-                      <p><small>Published on: ${new Date(
-                        announcement.createdAt
-                      ).toLocaleString()}</small></p>
+                      <p><small>Published on: ${new Date(announcement.createdAt).toLocaleString()}</small></p>
                     </div>
                     <hr/>
                   `;
@@ -274,8 +272,7 @@
               }
             })
             .catch((error) => {
-              content.innerHTML =
-                '<h2>Announcements</h2><p>Failed to load announcements. Please try again later.</p>';
+              content.innerHTML = '<h2>Announcements</h2><p>Failed to load announcements. Please try again later.</p>';
             });
         });
 
@@ -283,7 +280,6 @@
         document.getElementById('profile').addEventListener('click', function () {
           const storedFullName = localStorage.getItem('fullName') || '';
           const storedEmail = localStorage.getItem('email') || '';
-
           content.innerHTML = `
             <h2>Profile</h2>
             <form id="profileForm">
@@ -304,32 +300,41 @@
               </div>
             </form>
           `;
-
           document.getElementById('profileForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const newFullName = document.getElementById('fullNameInput').value;
             const newEmail = document.getElementById('emailInput').value;
             const newPassword = document.getElementById('passwordInput').value;
-
-            // Update localStorage
             localStorage.setItem('fullName', newFullName);
             localStorage.setItem('email', newEmail);
-
             if (newPassword) {
-              // Save hashed password to localStorage (for demonstration purposes only)
-              localStorage.setItem('password', newPassword); // Normally you'd hash it!
+              localStorage.setItem('password', newPassword);
             }
-
-            // Update the displayed name
             document.getElementById('fullName').textContent = newFullName;
-
             content.innerHTML = '<p>Your profile has been updated successfully!</p>';
           });
         });
 
+        // Logout Section
         document.getElementById('logout').addEventListener('click', function () {
-          localStorage.clear(); // Clear stored data on logout
+          localStorage.clear();
           window.location.href = 'student-login.html';
+        });
+
+        // DSA Practice Section with two inner buttons for DSA_app.py and DSA_dash.py
+        document.getElementById('tech').addEventListener('click', function (event) {
+          event.preventDefault();
+          content.innerHTML = `
+            <h2>DSA Practice Options</h2>
+            <button id="dsaQuestionsButton" class="btn">DSA Questions</button>
+            <button id="dsaAnalysisButton" class="btn">DSA Analysis</button>
+          `;
+          document.getElementById('dsaQuestionsButton').addEventListener('click', function () {
+            window.location.href = 'http://localhost:8503';
+          });
+          document.getElementById('dsaAnalysisButton').addEventListener('click', function () {
+            window.location.href = 'http://localhost:8504';
+          });
         });
       });
     </script>
