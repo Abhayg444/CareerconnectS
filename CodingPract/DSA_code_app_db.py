@@ -47,13 +47,13 @@ def extract_test_cases(description):
 def get_language_structure(language):
     """Return function template for the chosen language."""
     if language == "Python":
-        return """def function_name(param1, param2):\n    # Your code here\n    return output\n"""
+        return """def function_name(param1, param2):\n    # Your code here\n    # All test cases at once\n    return output\n"""
     elif language == "Java":
-        return """public class Solution {\n    public static <return_type> function_name(<param_types> param1, param2) {\n        // Your code here\n        return <return_value>;\n    }\n    public static void main(String[] args) {\n        // Call your function here\n    }\n}"""
+        return """public class Solution {\n    public static <return_type> function_name(<param_types> param1, param2) {\n        // Your code here\n        return <return_value>;\n    }\n    public static void main(String[] args) {\n        // Call your function here\n        // 1 test case at a time with specifying the input}\n}"""
     elif language == "C":
-        return """#include <stdio.h>\n\nvoid function_name(<param_types> param1, param2) {\n    // Your code here\n}\n\nint main() {\n    // Call your function here\n    return 0;\n}"""
+        return """#include <stdio.h>\n\nvoid function_name(<param_types> param1, param2) {\n    // Your code here\n}\n\nint main() {\n    // Call your function here\n    // 1 test case at a time with specifying the input\n    return 0;\n}"""
     elif language == "C++":
-        return """#include <iostream>\nusing namespace std;\n\nvoid function_name(<param_types> param1, param2) {\n    // Your code here\n}\n\nint main() {\n    // Call your function here\n    return 0;\n}"""
+        return """#include <iostream>\nusing namespace std;\n\nvoid function_name(<param_types> param1, param2) {\n    // Your code here\n}\n\nint main() {\n    // Call your function here\n    // 1 test case at a time with specifying the input\n    return 0;\n}"""
     return ""
 
 def format_time(seconds):

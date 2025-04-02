@@ -310,7 +310,7 @@ def load_questions(category):
                     options_list = options.split(';')
                 options_list = [option.strip() for option in options_list]
                 labeled_options = {chr(65 + i): option for i, option in enumerate(options_list)}
-                correct_label = None
+                correct_label = answer
                 for label, option in labeled_options.items():
                     if option.strip().lower() == answer.strip().lower():
                         correct_label = label
@@ -396,9 +396,28 @@ with st.sidebar:
             for col_index in range(cols_per_row):
                 question_index = row * cols_per_row + col_index
                 if question_index < num_questions:
-                    if cols[col_index].button(str(question_index + 1), key=f"qbutton_{question_index}"):
-                        st.session_state.current_question = question_index
-                        rerun_app()
+                    button_label = str(question_index + 1)
+
+                    # Check if the question is answered
+                    is_answered = st.session_state.user_answers[question_index] is not None
+
+                    # Create button with conditional color based on answered status
+                    button_style = "background-color: #4CAF50; color: white;" if is_answered else ""
+
+                    button_html = f"""
+                    <button style="border-radius: 50%; width: 40px; height: 40px; font-size: 14px; {button_style}">
+                        {button_label}
+                    </button>
+                    """
+                    
+                    # Display the button in the column
+                    with cols[col_index]:
+                        st.markdown(button_html, unsafe_allow_html=True)
+
+                        # Button action - if clicked, go to the respective question
+                        if st.button(button_label, key=f"qbutton_{question_index}"):
+                            st.session_state.current_question = question_index
+                            rerun_app()
 
     st.markdown('</div>', unsafe_allow_html=True)
 
