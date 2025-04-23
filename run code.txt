@@ -19,20 +19,3 @@ cd MockInter
 streamlit run app.py
 
 start index.html
-
-Gemini API Key
-AIzaSyACg-Kw-BONRCID9XDWue-oTZcDZ9653CM
-
-
-I made a project CareerConnect: Smart Campus Placement Portal
-It has aptitude test, dsa question solving, mock interview, resume ats scanner, resume builder, and more
-it has student, TPO, admin
-there is also mongodb database
-these are ran separately on streamlit app, and there is website with 3....student, tpo, admin login
-all the modules are connected to this website
-
-now i have the aptitude with me it has face procotring feature
-i want to store those in mongodb, so admin/tpo can check those later
-
-now I want to add face recognition proctoring in aptitude, dsa and mock interview
-give idea on it
