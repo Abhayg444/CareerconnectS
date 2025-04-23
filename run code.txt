@@ -12,10 +12,10 @@ streamlit run DSA_app_db.py
 cd CodingPract
 streamlit run  DSA_dash.py
 
-cd ResumeATS
+cd MockInter
 streamlit run app.py
 
-cd MockInter
+cd ResumeATS
 streamlit run app.py
 
 start index.html
